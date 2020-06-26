@@ -1,0 +1,20 @@
+<h1 class="header">
+  Add Word
+</h1>
+<form [formGroup]="addWordForm" class="form">
+  <div class="form__group">
+    <label class="form__label" for="foreignWord">Foreign word</label>
+    <input class="form__input" type="text" id="foreignWord" placeholder="Foreign word" formControlName="foreignWord">
+    <span class="form__hint" *ngIf="!addWordForm.get('foreignWord').valid && addWordForm.get('foreignWord').touched">The field "Foreign word" is required!</span>
+  </div>
+  <div class="form__group">
+    <label class="form__label" for="nativeWord">Native word</label>
+    <input class="form__input" type="email" id="nativeWord" placeholder="Native word" formControlName="nativeWord">
+    <span class="form__hint" *ngIf="!addWordForm.get('nativeWord').valid && addWordForm.get('nativeWord').touched">The field "Native word" is required!</span>
+  </div>
+  <div class="form__group">
+    <label class="form__label" for="comment">Comment</label>
+    <textarea class="form__input" id="comment" placeholder="Comment" formControlName="comment"></textarea>
+  </div>
+  <button class="form__button" type="submit">Add word</button>
+</form>
