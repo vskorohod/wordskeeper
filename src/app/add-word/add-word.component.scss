@@ -26,7 +26,7 @@
     }
   }
 
-  &__hint {
+  &__error-hint {
     margin-top: 0.1rem;
     font-size: 0.65rem;
     color: firebrick;
@@ -40,6 +40,19 @@
     background-color: darkcyan;
     border: none;
     border-radius: 0.5rem;
+    cursor: pointer;
+
+    &:disabled {
+      background-color: lightcyan;
+      color: darkcyan;
+      cursor: default;
+    }
+  }
+
+  &__success-hint {
+    text-align: center;
+    font-size: 0.85rem;
+    color: darkcyan;
   }
 }
 
