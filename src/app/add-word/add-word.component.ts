@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {HttpClient} from '@angular/common/http';
+import {Word} from '../word.model';
+import {WordService} from '../word.service';
 
 @Component({
   selector: 'app-add-word',
@@ -10,8 +11,8 @@ import {HttpClient} from '@angular/common/http';
 
 export class AddWordComponent implements OnInit {
   addWordForm: FormGroup;
-  isSuccessSend = false;
-  constructor(private http: HttpClient) {}
+  isSending = false;
+  constructor(private wordService: WordService) {}
 
   ngOnInit() {
     this.addWordForm = new FormGroup({
@@ -20,13 +21,8 @@ export class AddWordComponent implements OnInit {
       comment: new FormControl(null)
     });
   }
-  onAddWord(postData: {foreignWord: string, nativeWord: string, comment: string}) {
-    this.http.post('https://wordskeeper-298da.firebaseio.com/words.json', postData)
-      .subscribe(responseData => {
-        if (responseData) {
-          this.isSuccessSend = true;
-          this.addWordForm.reset();
-        }
-      });
+  onAddWord({foreignWord, nativeWord, comment}: {foreignWord: string, nativeWord: string, comment: string}) {
+    const newWord: Word = {foreignWord, nativeWord, comment, createDate: new Date()};
+    this.wordService.addWords(newWord);
   }
 }
