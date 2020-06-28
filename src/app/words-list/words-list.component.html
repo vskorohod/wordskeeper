@@ -1,0 +1,23 @@
+<div class="row">
+  <div class="col-12">
+    <h2>Word's list</h2>
+    <p *ngIf="!words.length && !isFetchingWords">No words available!</p>
+    <div class="text-center" *ngIf="isFetchingWords">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+    <ul class="list-group">
+      <li class="list-group-item" *ngFor="let word of words">
+          <div class="card-body">
+            <h5 class="card-title">{{ word.foreignWord }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ word.nativeWord }}</h6>
+            <p class="card-text">{{ word.comment }}</p>
+            <p>{{ word.createDate | date }}</p>
+            <a href="#" class="btn btn-primary mr-2">Edit</a>
+            <a href="#" class="btn btn-danger" (click)="onDeleteWord(word.id)">Delete</a>
+          </div>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -3,28 +3,11 @@
   text-align: center;
   color: darkcyan;
 }
+
 .form {
-  width: 80%;
-  margin: 2rem auto 0;
   display: flex;
   flex-direction: column;
-
-  &__label {
-    font-size: 0.8rem;
-    margin-bottom: 0.15rem;
-  }
-
-  &__input {
-    padding: 0.5rem;
-
-    &.ng-invalid.ng-touched {
-      border: 1px solid firebrick;
-      color: firebrick;
-      &::placeholder{
-        color: firebrick;
-      }
-    }
-  }
+  justify-content: center;
 
   &__error-hint {
     margin-top: 0.1rem;
@@ -32,32 +15,12 @@
     color: firebrick;
   }
 
-  &__button {
-    margin: 0 auto;
-    padding: 1rem 2rem;
-    font-size: 1rem;
-    color: white;
-    background-color: darkcyan;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
+  .ng-invalid.ng-touched {
+    border: 1px solid firebrick;
+    color: firebrick;
 
-    &:disabled {
-      background-color: lightcyan;
-      color: darkcyan;
-      cursor: default;
+    &::placeholder {
+      color: firebrick;
     }
   }
-
-  &__success-hint {
-    text-align: center;
-    font-size: 0.85rem;
-    color: darkcyan;
-  }
-}
-
-.form__group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
 }
