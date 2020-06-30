@@ -1,0 +1,11 @@
+{
+  "/api/translate": {
+    "target": "https://translate.api.cloud.yandex.net/translate/v2/translate",
+    "secure": false,
+    "pathRewrite": {
+      "^/api/translate": ""
+    },
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

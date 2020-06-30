@@ -1,4 +1,4 @@
-<h1 class="header">
+<h1 class="header text-primary">
   Add Word
 </h1>
 <form [formGroup]="addWordForm" class="form">
@@ -7,9 +7,10 @@
     <input class="form-control" type="text" id="foreignWord" placeholder="Foreign word" formControlName="foreignWord">
     <span class="form__error-hint" *ngIf="!addWordForm.get('foreignWord').valid && addWordForm.get('foreignWord').touched">The field "Foreign word" is required!</span>
   </div>
+  <button class="btn btn-primary mb-2" type="button" (click)="onTranslateWord(addWordForm.get('foreignWord').value)">Translate to native</button>
   <div class="form-group">
     <label for="nativeWord">Native word</label>
-    <input class="form-control" type="email" id="nativeWord" placeholder="Native word" formControlName="nativeWord">
+    <input class="form-control" type="text" id="nativeWord" placeholder="Native word" formControlName="nativeWord">
     <span class="form__error-hint" *ngIf="!addWordForm.get('nativeWord').valid && addWordForm.get('nativeWord').touched">The field "Native word" is required!</span>
   </div>
   <div class="form-group">
@@ -17,7 +18,7 @@
     <textarea class="form-control" rows="3" id="comment" placeholder="Comment" formControlName="comment"></textarea>
   </div>
   <button
-    class="btn btn-primary"
+    class="btn btn-primary mb-2"
     type="submit"
     [disabled]="addWordForm.invalid || isSending"
     (click)="onAddWord({
