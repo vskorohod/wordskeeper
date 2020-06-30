@@ -63,7 +63,7 @@ export class WordService {
     translateParams = translateParams.append('targetLanguageCode', 'ru');
     translateParams = translateParams.append('texts', `${word}`);
     translateParams = translateParams.append('folder_id', 'b1gnfinjrlg7j9ptnkan');
-    this.http.post('/api/translate', null, {
+    this.http.post('https://translate.api.cloud.yandex.net/translate/v2/translate', null, {
       headers: translateHeaders,
       params: translateParams
     })
