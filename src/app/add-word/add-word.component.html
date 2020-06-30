@@ -7,7 +7,15 @@
     <input class="form-control" type="text" id="foreignWord" placeholder="Foreign word" formControlName="foreignWord">
     <span class="form__error-hint" *ngIf="!addWordForm.get('foreignWord').valid && addWordForm.get('foreignWord').touched">The field "Foreign word" is required!</span>
   </div>
-  <button class="btn btn-primary mb-2" type="button" (click)="onTranslateWord(addWordForm.get('foreignWord').value)">Translate to native</button>
+  <button
+    class="btn btn-primary mb-2"
+    type="button"
+    (click)="onTranslateWord(addWordForm.get('foreignWord').value)"
+    [disabled]="!this.addWordForm.get('foreignWord').valid || isTranslating"
+  >
+    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="isTranslating"></span>
+    {{ isTranslating ? 'Translating...' : 'Translate word' }}
+  </button>
   <div class="form-group">
     <label for="nativeWord">Native word</label>
     <input class="form-control" type="text" id="nativeWord" placeholder="Native word" formControlName="nativeWord">
