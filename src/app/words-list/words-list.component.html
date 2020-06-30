@@ -1,6 +1,6 @@
+<h1 class="text-primary">Words list</h1>
 <div class="row">
   <div class="col-12">
-    <h2>Word's list</h2>
     <p *ngIf="!words.length && !isFetchingWords">No words available!</p>
     <div class="text-center" *ngIf="isFetchingWords">
       <div class="spinner-border" role="status">
@@ -14,8 +14,8 @@
             <h6 class="card-subtitle mb-2 text-muted">{{ word.nativeWord }}</h6>
             <p class="card-text">{{ word.comment }}</p>
             <p>{{ word.createDate | date }}</p>
-            <a href="#" class="btn btn-primary mr-2">Edit</a>
-            <a href="#" class="btn btn-danger" (click)="onDeleteWord(word.id)">Delete</a>
+            <button class="btn btn-primary mr-2">Edit</button>
+            <button class="btn btn-danger" (click)="onDeleteWord(word.id)">Delete</button>
           </div>
       </li>
     </ul>

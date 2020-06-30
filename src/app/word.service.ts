@@ -1,6 +1,6 @@
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import {Subject, throwError} from 'rxjs';
 import { Word } from './word.model';
 import { map } from 'rxjs/operators';
 
@@ -23,8 +23,10 @@ export class WordService {
       .get<{[key: string]: Word}>('https://wordskeeper-298da.firebaseio.com/words.json')
       .pipe(map(responseData => {
         const wordsArray = [];
-        for (const key of Object.keys(responseData)) {
-          wordsArray.push({...responseData[key], id: key});
+        if (responseData) {
+          for (const key of Object.keys(responseData)) {
+            wordsArray.push({...responseData[key], id: key});
+          }
         }
         return wordsArray;
       }))
@@ -46,7 +48,8 @@ export class WordService {
       }, (error) => this.error.next(error));
   }
   deleteWord(id: string): void {
-    this.http.delete('https://wordskeeper-298da.firebaseio.com/words/' + id + '.json');
+    this.http.delete('https://wordskeeper-298da.firebaseio.com/words/' + id + '.json')
+      .subscribe();
     this.words = this.words.filter((word) => word.id !== id);
     this.wordsSub.next(this.words);
   }
