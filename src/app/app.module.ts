@@ -10,11 +10,13 @@ import { AddWordComponent } from './add-word/add-word.component';
 import { WordsListComponent } from './words-list/words-list.component';
 import { HomeComponent } from './home/home.component';
 import {HeaderComponent} from './header/header.component';
+import {PlaygroundComponent} from './playground/playground.component';
 
 const appRoutes: Routes = [
-  {path: '', component: HomeComponent},
+  {path: '', component: AddWordComponent},
   {path: 'add-word', component: AddWordComponent},
-  {path: 'words-list', component: WordsListComponent}
+  {path: 'words-list', component: WordsListComponent},
+  {path: 'play', component: PlaygroundComponent}
 ];
 
 @NgModule({
@@ -23,7 +25,8 @@ const appRoutes: Routes = [
     AddWordComponent,
     WordsListComponent,
     HomeComponent,
-    HeaderComponent
+    HeaderComponent,
+    PlaygroundComponent
   ],
   imports: [
     BrowserModule,

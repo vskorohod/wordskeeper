@@ -13,12 +13,21 @@ import {Subscription} from 'rxjs';
 export class AddWordComponent implements OnInit, OnDestroy {
   addWordForm: FormGroup;
   isSending = false;
+  isSendingSub: Subscription;
+  isTranslating = false;
+  isTranslatingSub: Subscription;
   translatedWordSub: Subscription;
+  wordsSub: Subscription;
   constructor(private wordService: WordService) {}
 
   ngOnInit() {
     this.translatedWordSub = this.wordService.translatedWord.subscribe(translatedWord => {
       this.addWordForm.patchValue({nativeWord: translatedWord});
+    });
+    this.isSendingSub = this.wordService.isSending.subscribe(isSending => this.isSending = isSending);
+    this.isTranslatingSub = this.wordService.isTranslating.subscribe(isTranslating => this.isTranslating = isTranslating);
+    this.wordsSub = this.wordService.wordsSub.subscribe(() => {
+      this.addWordForm.reset();
     });
     this.addWordForm = new FormGroup({
       foreignWord: new FormControl(null, Validators.required),
@@ -35,5 +44,7 @@ export class AddWordComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.translatedWordSub.unsubscribe();
+    this.isTranslatingSub.unsubscribe();
+    this.isSendingSub.unsubscribe();
   }
 }

@@ -1,0 +1,42 @@
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-center mt-2">
+      <button class="btn btn-primary" (click)="onPlay()" *ngIf="!isPlay">Play</button>
+      <div *ngIf="isRightAnswer" class="alert" [ngClass]="isRightAnswer ? 'alert-success' : 'alert-danger'" role="alert">
+        {{ isRightAnswer ? 'You are right. ' : 'One more attempt' }}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-center mt-2 mb-2">
+      <div *ngIf="currentWord && isPlay">
+        <form [formGroup]="checkWordForm" class="form">
+          <div class="form-group">
+            <label for="foreignWord">Foreign word</label>
+            <input class="form-control" type="text" [value]="currentWord.foreignWord" id="foreignWord" disabled>
+          </div>
+          <div class="form-group">
+            <label for="nativeWord">Native word</label>
+            <div class="d-flex justify-content-between">
+              <input
+                class="form-control"
+                type="text"
+                placeholder="Your answer"
+                id="nativeWord"
+                formControlName="answer"
+              >
+              <button
+                class="btn btn-success"
+                (click)="onCheck(checkWordForm.get('answer').value)"
+                [disabled]="!checkWordForm.get('answer').valid"
+              >Check</button>
+            </div>
+          </div>
+        </form>
+        <button class="btn btn-success" *ngIf="isRightAnswer" (click)="onPlay()">Next word</button>
+      </div>
+    </div>
+  </div>
+</div>

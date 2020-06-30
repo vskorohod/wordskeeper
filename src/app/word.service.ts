@@ -13,6 +13,7 @@ export class WordService {
   words: Word[] = [];
   wordsSub = new Subject<Word[]>();
   isSending = new Subject<boolean>();
+  isTranslating = new Subject<boolean>();
   isFetchingWords = new Subject<boolean>();
   error = new Subject<Error>();
   translatedWord = new Subject<string>();
@@ -54,6 +55,7 @@ export class WordService {
     this.wordsSub.next(this.words);
   }
   translateWord(word: string): void {
+    this.isTranslating.next(true);
     let translateHeaders: HttpHeaders = new HttpHeaders();
     translateHeaders = translateHeaders.append('Authorization', this.translateKey);
     let translateParams = new HttpParams();
@@ -66,6 +68,7 @@ export class WordService {
       params: translateParams
     })
       .subscribe((responseData: {translations: {text: string}[]}) => {
+        this.isTranslating.next(false);
         this.translatedWord.next(responseData.translations[0].text);
       });
   }
