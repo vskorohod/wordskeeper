@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 })
 export class WordService {
   // tslint:disable-next-line:max-line-length
-  private translateKey = 'Bearer CggVAgAAABoBMxKABL86HP1aqvRr1ufzOvoOPtj-9Sq73X_4llh-ZwlWrXz8BZ7l1hTEHa1A3wOErzRqXcGutxS11b27owKLSUkWhtH4izZtFZ6CSO-mx9mhJufNQhIpUD3CmpnLvK3PBwx8ylx6AynUXOeFtZ6nBPLVhsWKUeruHvD8dlrXkqlxSjrEPXybszjb_IoxceDcLfWLJJgB7ySx2VW9popEjTNPf9fx5xBmJbIQfTw81SfduiT87lpJxJP092wTgrEpAcBnQHYl1S2eFjoOD1qb9OZhWhdQ8AP9ez9QAO5exKX6uTXG-ExH8LZvIESi-qxYT5Gc2t5Vw_rDiePkY4VtqXBF3CONtibWcQTiaWO-txxRPdO4ZbarBsXltgrKsTLC1d6ADnJNY9d3xtlJB26XlbTZ3Uh0hgdSENy1jK62OaOUW2FqPTQpWzFOrrXrCcltK729yXVh8BXu5N80UsNQO4hMSNR2JePG_MK0XeRDJ5E2JXGq7O9Fj0OKka4eJ8GFVTJ1pX9wbTAmtFZNckgizcVljsiVf-lYT9u8losrAcR0NvIBijtyvUoWMj5e9Iiru_djdsSFgctdcEhAKzhkL2nHxlV5ZC_KQGyZczwbTLD1hTatoB03bXbu0EwtUJzAd45hV9NXsJV-wYkaUI9kYoMxYgvLhAT5GNZuigD8LIf3hspfGiQQiOHr9wUYyLLu9wUiFgoUYWpldXJrOWM4M2cyY3JnMGc0dHE=';
+  private translateKey = 'Bearer CggVAgAAABoBMxKABJplLB2Se133ModDOCG9nPxyOoXimBFsOqdoBLfRYuBTITy-pgaaEZgm3xjJ8pX45NrXbrv64Mitm5EY4pOo9y14G9vmrgcdX8-jQJNadS5qL8jG7ohoZNhTlUTl6JbD70gUajHtiODZWbmn3oR60B63pHGo5_5pBxyDa6Oi8Kz9gyRkUpDgce3oqBK_aqCvoVfsISbli615X2xw_T7Nbsph4D4Ysp51fL406j5RMq6x1hWuJVu39i2mdPoBlaEF0PzL58R9iwlA-IO9zpzHEUKfCH26ESEfoB1pJaC2xd9gtKg2R4A3NosP9KZX2Ao11FQ6-dB0ZTVUMDpBz9KNuX0kIAV4DO10P31zLUw46hOoH1in32M_aZsDMNCBfCch4y7-m6wjXf4t1QA5cG-vOeUw0Ur6wSJ5lbbqr3hVTMLc6hkeUcRnumcOgMFO5VKwUTZStGdBjbgBky4Vam5Worz7Y5ysegXLdXEx94VWMOOe6yO8WjKI7QiJMVVziaVw05zlvhiR-CVV468b1Fcud95_csxEo-o7cbG6Po2YiGfQYuSKmlppZecpHeZ7w_4WQlq-8TgzSbj4SrsRf0owNv9kfsav1RDcEu79sZCcbVTWEwpRd1Z2PwFVbBFasZfpvuyYwV8V_ZAkpIauJQq0qmSkI0S3hb__nJttuNQmg8MKGiQQuKrx9wUY-Pvz9wUiFgoUYWpldXJrOWM4M2cyY3JnMGc0dHE=';
   words: Word[] = [];
   wordsSub = new Subject<Word[]>();
   isSending = new Subject<boolean>();
@@ -58,6 +58,9 @@ export class WordService {
     this.isTranslating.next(true);
     let translateHeaders: HttpHeaders = new HttpHeaders();
     translateHeaders = translateHeaders.append('Authorization', this.translateKey);
+    translateHeaders = translateHeaders.append('Access-Control-Allow-Methods', 'GET, POST');
+    translateHeaders = translateHeaders.append('Access-Control-Allow-Headers', '*');
+    translateHeaders = translateHeaders.append('Access-Control-Allow-Origin', '*');
     let translateParams = new HttpParams();
     translateParams = translateParams.append('sourceLanguageCode', 'de');
     translateParams = translateParams.append('targetLanguageCode', 'ru');
