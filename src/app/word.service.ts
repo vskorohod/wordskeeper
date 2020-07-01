@@ -58,14 +58,14 @@ export class WordService {
     this.isTranslating.next(true);
     let translateHeaders: HttpHeaders = new HttpHeaders();
     translateHeaders = translateHeaders.append('Authorization', this.translateKey);
-    translateHeaders = translateHeaders.append('Access-Control-Allow-Methods', 'GET, POST');
-    translateHeaders = translateHeaders.append('Access-Control-Allow-Headers', '*');
     translateHeaders = translateHeaders.append('Access-Control-Allow-Origin', '*');
     let translateParams = new HttpParams();
     translateParams = translateParams.append('sourceLanguageCode', 'de');
     translateParams = translateParams.append('targetLanguageCode', 'ru');
     translateParams = translateParams.append('texts', `${word}`);
     translateParams = translateParams.append('folder_id', 'b1gnfinjrlg7j9ptnkan');
+    console.log(translateHeaders);
+    console.log(translateParams);
     this.http.post('https://translate.api.cloud.yandex.net/translate/v2/translate', null, {
       headers: translateHeaders,
       params: translateParams
