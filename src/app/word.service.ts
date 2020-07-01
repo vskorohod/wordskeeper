@@ -66,7 +66,7 @@ export class WordService {
     translateParams = translateParams.append('folder_id', 'b1gnfinjrlg7j9ptnkan');
     console.log(translateHeaders);
     console.log(translateParams);
-    this.http.post('/api/translate', null, {
+    this.http.post('https://translate.api.cloud.yandex.net/translate/v2/translate', null, {
       headers: translateHeaders,
       params: translateParams
     })
