@@ -12,15 +12,18 @@ import {Subscription} from 'rxjs';
 
 export class WordsListComponent implements OnInit, OnDestroy {
   isFetchingWords = false;
-  fetchingWordsSub: Subscription;
   words: Word[] = [];
   wordsSub: Subscription;
   constructor(private wordService: WordService) {}
   ngOnInit() {
-    this.fetchingWordsSub = this.wordService.isFetchingWords.subscribe((isFetchingWords) => {
-      this.isFetchingWords = isFetchingWords;
+    this.isFetchingWords = true;
+    this.wordService.fetchWords().subscribe(words => {
+      this.isFetchingWords = false;
+      this.words = words;
+    }, error => {
+      console.log(error);
+      this.isFetchingWords = false;
     });
-    this.wordService.fetchWords();
     this.wordsSub = this.wordService.wordsSub.subscribe((words) => {
       this.words = words;
     });
@@ -29,7 +32,6 @@ export class WordsListComponent implements OnInit, OnDestroy {
     this.wordService.deleteWord(id);
   }
   ngOnDestroy() {
-    this.fetchingWordsSub.unsubscribe();
     this.wordsSub.unsubscribe();
   }
 }

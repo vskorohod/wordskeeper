@@ -3,12 +3,10 @@
   <div class="col-12">
     <p *ngIf="!words.length && !isFetchingWords">No words available!</p>
     <div class="text-center" *ngIf="isFetchingWords">
-      <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
+      <app-spinner></app-spinner>
     </div>
-    <ul class="list-group">
-      <li class="list-group-item" *ngFor="let word of words">
+    <ul class="list-group d-flex justify-content-between">
+      <li class="list-group-item col-md-3" *ngFor="let word of words">
           <div class="card-body">
             <h5 class="card-title">{{ word.foreignWord }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{ word.nativeWord }}</h6>
