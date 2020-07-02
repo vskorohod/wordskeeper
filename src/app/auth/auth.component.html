@@ -1,0 +1,38 @@
+<h1 class="text-primary">
+  {{ isLoginMode ? 'Login' : 'Sign Up' }}
+</h1>
+<div class="row">
+  <div class="col-12">
+    <div class="text-center" *ngIf="isLoading">
+      <app-spinner></app-spinner>
+    </div>
+    <div class="text-center" *ngIf="error">
+      <div class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+    </div>
+    <form [formGroup]="authForm" *ngIf="!isLoading">
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input class="form-control" type="email" id="email" formControlName="email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input class="form-control" type="password" id="password" formControlName="password">
+      </div>
+      <div>
+        <button
+          type="submit"
+          class="btn btn-primary mr-2"
+          (click)="onSubmitForm(authForm.get('email').value, authForm.get('password').value)"
+          [disabled]="authForm.invalid"
+        >
+          {{ isLoginMode ? 'Login' : 'Sign Up' }}
+        </button>
+        <button type="button" class="btn btn-warning" (click)="onSwitchMode()">
+          {{ isLoginMode ? 'Switch to Sign Up' : 'Switch to Login' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

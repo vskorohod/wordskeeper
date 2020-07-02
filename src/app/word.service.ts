@@ -1,8 +1,9 @@
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {Subject, throwError} from 'rxjs';
+import {Observable, Subject, throwError} from 'rxjs';
 import { Word } from './word.model';
-import { map } from 'rxjs/operators';
+import {exhaustMap, map, take} from 'rxjs/operators';
+import {AuthService} from './auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,28 +15,29 @@ export class WordService {
   wordsSub = new Subject<Word[]>();
   isSending = new Subject<boolean>();
   isTranslating = new Subject<boolean>();
-  isFetchingWords = new Subject<boolean>();
   error = new Subject<Error>();
   translatedWord = new Subject<string>();
-  constructor(private http: HttpClient) {}
-  fetchWords(): void {
-    this.isFetchingWords.next(true);
-    this.http
-      .get<{[key: string]: Word}>('https://wordskeeper-298da.firebaseio.com/words.json')
-      .pipe(map(responseData => {
-        const wordsArray = [];
-        if (responseData) {
-          for (const key of Object.keys(responseData)) {
-            wordsArray.push({...responseData[key], id: key});
-          }
-        }
-        return wordsArray;
-      }))
-      .subscribe((words: Word[]) => {
-        this.isFetchingWords.next(false);
-        this.words = words;
-        this.wordsSub.next(this.words);
-      }, (error) => this.error.next(error));
+  constructor(private http: HttpClient, private authService: AuthService) {}
+  fetchWords(): Observable<Word[]> {
+    return this.authService.user.pipe(
+      take(1),
+      exhaustMap(user => {
+        return this.http
+          .get<{[key: string]: Word}>(
+            'https://wordskeeper-298da.firebaseio.com/words.json'
+          ).pipe(
+            map(responseData => {
+              const wordsArray = [];
+              if (responseData) {
+                for (const key of Object.keys(responseData)) {
+                  wordsArray.push({...responseData[key], id: key});
+                }
+              }
+              return wordsArray;
+            })
+          );
+      }),
+      );
   }
   addWords(newWord): void {
     this.isSending.next(true);
@@ -64,8 +66,6 @@ export class WordService {
     translateParams = translateParams.append('targetLanguageCode', 'ru');
     translateParams = translateParams.append('texts', `${word}`);
     translateParams = translateParams.append('folder_id', 'b1gnfinjrlg7j9ptnkan');
-    console.log(translateHeaders);
-    console.log(translateParams);
     this.http.post('https://translate.api.cloud.yandex.net/translate/v2/translate', null, {
       headers: translateHeaders,
       params: translateParams

@@ -11,15 +11,20 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 export class PlaygroundComponent implements OnInit {
   rightAnswerArray: Word[] = [];
+  words: Word[] = [];
   currentWord: Word = null;
   checkWordForm: FormGroup;
   result = '';
   isPlay = false;
-  isRightAnswer = false;
+  isRightAnswer = null;
   private newWord: Word;
   constructor(private wordService: WordService) {}
   ngOnInit() {
-    this.wordService.fetchWords();
+    this.wordService.fetchWords().subscribe(words => {
+      this.words = words;
+    }, error => {
+      console.log(error);
+    });
     this.checkWordForm = new FormGroup({
       answer: new FormControl(null, Validators.required)
     });
@@ -28,7 +33,7 @@ export class PlaygroundComponent implements OnInit {
     return Math.floor(Math.random() * length);
   }
   private getNewWord(): Word {
-    return this.wordService.words[this.getRandom(this.wordService.words.length)];
+    return this.words[this.getRandom(this.wordService.words.length)];
     // if (this.rightAnswerArray.includes(this.newWord)) {
     //   console.log('Include', this.newWord.foreignWord);
     //   if (this.rightAnswerArray.length === this.wordService.words.length) {
@@ -45,11 +50,11 @@ export class PlaygroundComponent implements OnInit {
   onPlay(): void {
     this.result = '';
     this.isPlay = true;
-    this.isRightAnswer = false;
+    this.isRightAnswer = null;
     this.currentWord = this.getNewWord();
   }
   onCheck(word: string): void {
-    if (this.currentWord.nativeWord === word) {
+    if (this.currentWord.nativeWord.toLowerCase().trim() === word.toLowerCase().trim()) {
       this.isRightAnswer = true;
       this.checkWordForm.patchValue({answer: ''});
       this.rightAnswerArray.push(this.currentWord);
