@@ -1,10 +1,15 @@
 <h1 class="text-primary">Playground</h1>
 <div class="row">
   <div class="col-12">
-    <div class="d-flex justify-content-center mt-2">
-      <button class="btn btn-primary" (click)="onPlay()" *ngIf="!isPlay">Play</button>
-      <div *ngIf="isRightAnswer !== null" class="alert" [ngClass]="isRightAnswer ? 'alert-success' : 'alert-danger'" role="alert">
-        {{ isRightAnswer ? 'You are right. ' : 'One more attempt' }}
+    <div class="d-flex flex-column justify-content-center mt-2">
+      <div class="text-center" *ngIf="wordsLoading && !isError">
+        <app-spinner>Loading words...</app-spinner>
+      </div>
+      <div class="alert alert-danger" role="alert" *ngIf="isError">
+        {{ errorMessage }}
+      </div>
+      <div  class="text-center" *ngIf="!wordsLoading || !isError || (!wordsLoading && !isError) || !isPlay">
+        <button class="btn btn-primary" (click)="onPlay()">Play</button>
       </div>
     </div>
   </div>
@@ -13,6 +18,9 @@
   <div class="col-12">
     <div class="d-flex justify-content-center mt-2 mb-2">
       <div *ngIf="currentWord && isPlay">
+        <div *ngIf="isRightAnswer !== null" class="alert" [ngClass]="isRightAnswer ? 'alert-success' : 'alert-danger'" role="alert">
+          {{ isRightAnswer ? 'You are right. ' : 'One more attempt' }}
+        </div>
         <form [formGroup]="checkWordForm" class="form">
           <div class="form-group">
             <label for="foreignWord">Foreign word</label>
@@ -31,11 +39,16 @@
               <button
                 class="btn btn-success"
                 (click)="onCheck(checkWordForm.get('answer').value)"
-                [disabled]="!checkWordForm.get('answer').valid"
               >Check</button>
             </div>
           </div>
         </form>
+        <div class="card-body" *ngIf="isRightAnswer !== null">
+          <h5 class="card-title">{{ currentWord.foreignWord }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{ currentWord.nativeWord }}</h6>
+          <p class="card-text">{{ currentWord.comment }}</p>
+          <p>{{ currentWord.createDate | date }}</p>
+        </div>
         <button class="btn btn-success" (click)="onPlay()">Next word</button>
       </div>
     </div>

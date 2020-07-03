@@ -3,7 +3,7 @@
   <div class="col-12">
     <p *ngIf="!words.length && !isFetchingWords">No words available!</p>
     <div class="text-center" *ngIf="isFetchingWords">
-      <app-spinner></app-spinner>
+      <app-spinner>Loading words...</app-spinner>
     </div>
     <ul class="list-group d-flex justify-content-between">
       <li class="list-group-item col-md-3" *ngFor="let word of words">

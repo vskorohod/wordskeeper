@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Word} from '../word.model';
 import {WordService} from '../word.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
@@ -10,20 +10,28 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 })
 
 export class PlaygroundComponent implements OnInit {
-  rightAnswerArray: Word[] = [];
   words: Word[] = [];
+  wordsLoading = false;
   currentWord: Word = null;
   checkWordForm: FormGroup;
-  result = '';
   isPlay = false;
-  isRightAnswer = null;
-  private newWord: Word;
+  isRightAnswer: boolean = null;
+  isError = false;
+  errorMessage: string = null;
   constructor(private wordService: WordService) {}
   ngOnInit() {
+    this.wordsLoading = true;
     this.wordService.fetchWords().subscribe(words => {
+      console.log(words);
       this.words = words;
+      this.wordsLoading = false;
     }, error => {
-      console.log(error);
+      this.isError = true;
+      this.wordsLoading = false;
+      this.errorMessage = error.statusText;
+      console.log(this.wordsLoading);
+      console.log(this.isError);
+      console.log(this.isPlay);
     });
     this.checkWordForm = new FormGroup({
       answer: new FormControl(null, Validators.required)
@@ -33,33 +41,16 @@ export class PlaygroundComponent implements OnInit {
     return Math.floor(Math.random() * length);
   }
   private getNewWord(): Word {
-    return this.words[this.getRandom(this.wordService.words.length)];
-    // if (this.rightAnswerArray.includes(this.newWord)) {
-    //   console.log('Include', this.newWord.foreignWord);
-    //   if (this.rightAnswerArray.length === this.wordService.words.length) {
-    //     console.log('Lengths are equal');
-    //     this.rightAnswer = 'There aren\'t more words';
-    //     this.isPlay = false;
-    //   }
-    //   this.getNewWord();
-    // } else {
-    //   console.log('Word is uniq', this.newWord.foreignWord);
-    //   return this.newWord;
-    // }
+    const elementPosition = this.getRandom(this.words.length);
+    return this.words[elementPosition];
   }
   onPlay(): void {
-    this.result = '';
     this.isPlay = true;
     this.isRightAnswer = null;
+    this.checkWordForm.patchValue({answer: ''});
     this.currentWord = this.getNewWord();
   }
   onCheck(word: string): void {
-    if (this.currentWord.nativeWord.toLowerCase().trim() === word.toLowerCase().trim()) {
-      this.isRightAnswer = true;
-      this.checkWordForm.patchValue({answer: ''});
-      this.rightAnswerArray.push(this.currentWord);
-    } else {
-      this.isRightAnswer = false;
-    }
+    this.isRightAnswer = this.currentWord.nativeWord.toLowerCase().trim() === word.toLowerCase().trim();
   }
 }

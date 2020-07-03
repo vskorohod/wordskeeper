@@ -24,7 +24,7 @@ export class WordService {
       exhaustMap(user => {
         return this.http
           .get<{[key: string]: Word}>(
-            'https://wordskeeper-298da.firebaseio.com/words.json'
+            'https://wordskeeper-298da.firebaseio.com/words.json!'
           ).pipe(
             map(responseData => {
               const wordsArray = [];
