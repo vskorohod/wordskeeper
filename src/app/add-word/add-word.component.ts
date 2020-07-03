@@ -39,9 +39,9 @@ export class AddWordComponent implements OnInit, OnDestroy {
     const newWord: Word = {foreignWord, nativeWord, comment, createDate: new Date()};
     this.wordService.addWords(newWord);
   }
-  onTranslateWord(foreignWord: string) {
-    this.wordService.translateWord(foreignWord);
-  }
+  // onTranslateWord(foreignWord: string) {
+  //   this.wordService.translateWord(foreignWord);
+  // }
   ngOnDestroy() {
     this.translatedWordSub.unsubscribe();
     this.isTranslatingSub.unsubscribe();
