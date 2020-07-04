@@ -1,16 +1,18 @@
 <h1 class="text-primary">Playground</h1>
 <div class="row">
-  <div class="col-12">
-    <div class="d-flex flex-column justify-content-center mt-2">
-      <div class="text-center" *ngIf="wordsLoading && !isError">
+  <div class="col-12" *ngIf="!isError">
+    <div class="d-flex flex-column justify-content-center mt-2" *ngIf="!isPlay">
+      <div class="text-center" *ngIf="wordsLoading">
         <app-spinner>Loading words...</app-spinner>
       </div>
-      <div class="alert alert-danger" role="alert" *ngIf="isError">
-        {{ errorMessage }}
-      </div>
-      <div  class="text-center" *ngIf="!wordsLoading || !isError || (!wordsLoading && !isError) || !isPlay">
+      <div  class="text-center" *ngIf="!wordsLoading">
         <button class="btn btn-primary" (click)="onPlay()">Play</button>
       </div>
+    </div>
+  </div>
+  <div class="col-12" *ngIf="isError">
+    <div class="alert alert-danger" role="alert">
+      {{ errorMessage }}
     </div>
   </div>
 </div>

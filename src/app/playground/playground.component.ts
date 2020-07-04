@@ -22,16 +22,12 @@ export class PlaygroundComponent implements OnInit {
   ngOnInit() {
     this.wordsLoading = true;
     this.wordService.fetchWords().subscribe(words => {
-      console.log(words);
       this.words = words;
       this.wordsLoading = false;
     }, error => {
       this.isError = true;
       this.wordsLoading = false;
       this.errorMessage = error.statusText;
-      console.log(this.wordsLoading);
-      console.log(this.isError);
-      console.log(this.isPlay);
     });
     this.checkWordForm = new FormGroup({
       answer: new FormControl(null, Validators.required)
