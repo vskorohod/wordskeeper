@@ -13,7 +13,8 @@ export class AuthComponent implements OnInit {
   authForm: FormGroup;
   isLoginMode = true;
   isLoading = false;
-  error: string = null;
+  isError = false;
+  errorMessage: string = null;
   constructor(private authService: AuthService, private router: Router) {}
   ngOnInit() {
     this.authForm = new FormGroup({
@@ -23,10 +24,10 @@ export class AuthComponent implements OnInit {
   }
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
-    this.error = null;
+    this.isError = false;
   }
   onSubmitForm(email: string, password: string) {
-    this.error = null;
+    this.isError = false;
     if (this.authForm.invalid) {
       return;
     }
@@ -38,14 +39,18 @@ export class AuthComponent implements OnInit {
       authObs = this.authService.signUp(email, password);
     }
     authObs.subscribe(
-      resData => {
+      () => {
         this.isLoading = false;
         this.router.navigate(['/words-list']);
       },
       errorMessage => {
-        this.error = errorMessage;
+        this.isError = true;
+        this.errorMessage = errorMessage;
         this.isLoading = false;
       });
     this.authForm.reset();
+  }
+  errorStatusChange(errorStatus) {
+    this.isError = errorStatus;
   }
 }

@@ -4,4 +4,6 @@ export interface Word {
   nativeWord: string;
   comment: string;
   createDate: Date;
+  lists?: object[];
+  rightAnswerQuantity: number;
 }

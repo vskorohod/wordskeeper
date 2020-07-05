@@ -10,41 +10,53 @@ import {Subscription} from 'rxjs';
   styleUrls: ['./add-word.component.scss']
 })
 
-export class AddWordComponent implements OnInit, OnDestroy {
+export class AddWordComponent implements OnInit {
   addWordForm: FormGroup;
   isSending = false;
-  isSendingSub: Subscription;
   isTranslating = false;
-  isTranslatingSub: Subscription;
-  translatedWordSub: Subscription;
-  wordsSub: Subscription;
+  isError = false;
+  errorMessage = '';
+  selectedLists = [];
   constructor(private wordService: WordService) {}
 
   ngOnInit() {
-    this.translatedWordSub = this.wordService.translatedWord.subscribe(translatedWord => {
-      this.addWordForm.patchValue({nativeWord: translatedWord});
-    });
-    this.isSendingSub = this.wordService.isSending.subscribe(isSending => this.isSending = isSending);
-    this.isTranslatingSub = this.wordService.isTranslating.subscribe(isTranslating => this.isTranslating = isTranslating);
-    this.wordsSub = this.wordService.wordsSub.subscribe(() => {
-      this.addWordForm.reset();
-    });
+    // this.translatedWordSub = this.wordService.translatedWord.subscribe(translatedWord => {
+    //   this.addWordForm.patchValue({nativeWord: translatedWord});
+    // });
+    // this.isTranslatingSub = this.wordService.isTranslating.subscribe(isTranslating => this.isTranslating = isTranslating);
     this.addWordForm = new FormGroup({
       foreignWord: new FormControl(null, Validators.required),
       nativeWord: new FormControl(null, Validators.required),
       comment: new FormControl(null)
     });
   }
-  onAddWord({foreignWord, nativeWord, comment}: {foreignWord: string, nativeWord: string, comment: string}) {
-    const newWord: Word = {foreignWord, nativeWord, comment, createDate: new Date()};
-    this.wordService.addWords(newWord);
+  onAddWord({foreignWord, nativeWord, comment}: {foreignWord: string, nativeWord: string, comment: string}): void {
+    this.isSending = true;
+    const newWord: Word = {
+      foreignWord,
+      nativeWord,
+      comment,
+      createDate: new Date(),
+      rightAnswerQuantity: 0,
+      lists: this.selectedLists
+
+    };
+    this.wordService.addWords(newWord).subscribe(res => {
+      this.isSending = false;
+      this.addWordForm.reset();
+    }, error => {
+      this.isError = true;
+      this.errorMessage = error.error.error + '. Try again later';
+      this.isSending = false;
+    });
   }
   // onTranslateWord(foreignWord: string) {
   //   this.wordService.translateWord(foreignWord);
   // }
-  ngOnDestroy() {
-    this.translatedWordSub.unsubscribe();
-    this.isTranslatingSub.unsubscribe();
-    this.isSendingSub.unsubscribe();
+  changeErrorStatus(errorStatus: boolean): void {
+    this.isError = errorStatus;
+  }
+  onSelectedLists(listsArray) {
+    this.selectedLists = listsArray;
   }
 }

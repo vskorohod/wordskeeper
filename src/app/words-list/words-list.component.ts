@@ -1,8 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import { WordService } from '../word.service';
 import { Word } from '../word.model';
-import {log} from 'util';
-import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-words-list',
@@ -13,7 +11,10 @@ import {Subscription} from 'rxjs';
 export class WordsListComponent implements OnInit, OnDestroy {
   isFetchingWords = false;
   words: Word[] = [];
-  wordsSub: Subscription;
+  isError = false;
+  errorMessage = '';
+  deleteMessage = '';
+  deleteTimeout: number;
   constructor(private wordService: WordService) {}
   ngOnInit() {
     this.isFetchingWords = true;
@@ -21,17 +22,32 @@ export class WordsListComponent implements OnInit, OnDestroy {
       this.isFetchingWords = false;
       this.words = words;
     }, error => {
-      console.log(error);
+      this.isError = true;
+      this.errorMessage = error.statusText + '. Try again later.';
       this.isFetchingWords = false;
-    });
-    this.wordsSub = this.wordService.wordsSub.subscribe((words) => {
-      this.words = words;
     });
   }
   onDeleteWord(id: string) {
-    this.wordService.deleteWord(id);
+    this.deleteMessage = 'Delete after 2 seconds';
+    this.deleteTimeout = setTimeout(() => {
+      this.wordService.deleteWord(id).subscribe(() => {
+        this.words = this.words.filter((word) => word.id !== id);
+        this.deleteMessage = '';
+      }, (error) => {
+        this.deleteMessage = '';
+        this.isError = true;
+        this.errorMessage = error.statusText + '. Try again later.';
+      });
+    }, 2000);
+  }
+  changeErrorStatus(errorStatus: boolean) {
+    this.isError = errorStatus;
+  }
+  stopDelete() {
+    clearTimeout(this.deleteTimeout);
+    this.deleteMessage = '';
   }
   ngOnDestroy() {
-    this.wordsSub.unsubscribe();
+    clearTimeout(this.deleteTimeout);
   }
 }
