@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import { Routes, RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { AddWordComponent } from './add-word/add-word.component';
@@ -15,6 +14,8 @@ import { AuthComponent } from './auth/auth.component';
 import {AppRoutingModule} from './app-routing.module';
 import {SpinnerComponent} from './shared/spinner/spinner.component';
 import {AuthInterceptorService} from './auth/auth-interceptor.service';
+import {ErrorHandlerComponent} from './shared/error-handler/error-handler.component';
+import {AddToListsComponent} from './add-word/add-to-lists/add-to-lists.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,9 @@ import {AuthInterceptorService} from './auth/auth-interceptor.service';
     HeaderComponent,
     PlaygroundComponent,
     AuthComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    ErrorHandlerComponent,
+    AddToListsComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,57 @@
+<app-error-handler [isError]="isError" [errorMessage]="errorMessage" (errorStatusChange)="errorStatusChange($event)"></app-error-handler>
+<div class="card">
+  <div class="card-body">
+    <div class="text-center" *ngIf="isLoading">
+      <app-spinner></app-spinner>
+    </div>
+    <div class="div" *ngIf="!lists.length  && !selectedLists.length">
+      No lists
+    </div>
+    <div class="row mb-2">
+      <div class="col-6">
+        <div class="btn-toolbar" role="toolbar" aria-label="Selected word's list">
+          <div class="btn-group-vertical" role="group" aria-label="Available for selecting">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="addList(list.id)"
+              *ngFor="let list of lists"
+            >{{list.name}}</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="btn-toolbar" role="toolbar" aria-label="Selected word's list">
+          <div class="btn-group-vertical mb-2" role="group" aria-label="Selected lists" *ngIf="selectedLists.length">
+            <button
+              type="button"
+              class="btn btn-success"
+              (click)="removeList(selectedList.id)"
+              *ngFor="let selectedList of selectedLists"
+            >{{selectedList.name}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="newListItem">Add new list item</label>
+      <div class="row">
+        <div class="col-8">
+          <input class="form-control mr-2" type="text" id="newListItem" placeholder="Native word" #newList>
+        </div>
+        <div class="col-4">
+          <button
+            type="button"
+            class="btn btn-warning"
+            (click)="addNewList(newList.value)"
+            [disabled]="isLoading || isAdding"
+          >
+            {{
+            isAdding ? 'Adding...' : 'Add list'
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
