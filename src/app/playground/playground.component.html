@@ -1,16 +1,26 @@
 <h1 class="text-primary">Playground</h1>
 <div class="row">
-  <div class="col-12">
-    <div class="d-flex flex-column justify-content-center mt-2">
-      <div class="text-center" *ngIf="wordsLoading && !isError">
+  <div class="col-12" *ngIf="!isError">
+    <div class="d-flex flex-column justify-content-center mt-2" *ngIf="!isPlay">
+      <div class="text-center" *ngIf="wordsLoading">
         <app-spinner>Loading words...</app-spinner>
       </div>
-      <div class="alert alert-danger" role="alert" *ngIf="isError">
-        {{ errorMessage }}
+      <div class="btn-toolbar" role="toolbar" *ngIf="!wordsLoading">
+        <div class="btn-group-vertical" role="group" aria-label="Choose a play mode">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            *ngFor="let list of lists"
+            (click)="onPlay(list.id)"
+          >{{ 'Plat with ' + list.name }}</button>
+          <button type="button" class="btn btn-primary" (click)="onPlay()">Play with all words</button>
+        </div>
       </div>
-      <div  class="text-center" *ngIf="!wordsLoading || !isError || (!wordsLoading && !isError) || !isPlay">
-        <button class="btn btn-primary" (click)="onPlay()">Play</button>
-      </div>
+    </div>
+  </div>
+  <div class="col-12" *ngIf="isError">
+    <div class="alert alert-danger" role="alert">
+      {{ errorMessage }}
     </div>
   </div>
 </div>
@@ -49,7 +59,10 @@
           <p class="card-text">{{ currentWord.comment }}</p>
           <p>{{ currentWord.createDate | date }}</p>
         </div>
-        <button class="btn btn-success" (click)="onPlay()">Next word</button>
+        <div class="d-flex flex-column">
+          <button class="btn btn-primary mb-3" (click)="onPlay()">Next word</button>
+          <button class="btn btn-warning" (click)="onCancel()">Back to option</button>
+        </div>
       </div>
     </div>
   </div>

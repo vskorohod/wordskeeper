@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Word} from '../word.model';
 import {WordService} from '../word.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-playground',
@@ -9,7 +10,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
   styleUrls: ['./playground.component.scss']
 })
 
-export class PlaygroundComponent implements OnInit {
+export class PlaygroundComponent implements OnInit, OnDestroy {
   words: Word[] = [];
   wordsLoading = false;
   currentWord: Word = null;
@@ -18,20 +19,30 @@ export class PlaygroundComponent implements OnInit {
   isRightAnswer: boolean = null;
   isError = false;
   errorMessage: string = null;
+  listsSub: Subscription;
+  lists = [];
+  currentList = '';
   constructor(private wordService: WordService) {}
   ngOnInit() {
     this.wordsLoading = true;
+    this.wordService.fetchWordsLists().subscribe(
+      () => {
+      },
+      (error) => {
+        this.isError = true;
+        this.errorMessage = 'Lists were not loaded. Try again later';
+      }
+    );
+    this.listsSub = this.wordService.listsSubject.subscribe(lists => {
+      this.lists = lists;
+    });
     this.wordService.fetchWords().subscribe(words => {
-      console.log(words);
       this.words = words;
       this.wordsLoading = false;
     }, error => {
       this.isError = true;
       this.wordsLoading = false;
       this.errorMessage = error.statusText;
-      console.log(this.wordsLoading);
-      console.log(this.isError);
-      console.log(this.isPlay);
     });
     this.checkWordForm = new FormGroup({
       answer: new FormControl(null, Validators.required)
@@ -40,17 +51,41 @@ export class PlaygroundComponent implements OnInit {
   private getRandom(length: number): number {
     return Math.floor(Math.random() * length);
   }
-  private getNewWord(): Word {
-    const elementPosition = this.getRandom(this.words.length);
-    return this.words[elementPosition];
+  private getNewWord(listId?: string): Word {
+    let wordArray = [];
+    if (listId) {
+      wordArray = this.words.filter(word => {
+        if (word.lists) {
+          const element =  Object.values(word.lists).filter((item: {id: string, name: string}) => {
+            return item.id === listId;
+          });
+          return element.length;
+        }
+      });
+    } else {
+      wordArray = this.words;
+    }
+    const elementPosition = this.getRandom(wordArray.length);
+    return wordArray[elementPosition];
   }
-  onPlay(): void {
+  onPlay(listId?: string): void {
+    if (listId) {
+      this.currentList = listId;
+    }
     this.isPlay = true;
     this.isRightAnswer = null;
     this.checkWordForm.patchValue({answer: ''});
-    this.currentWord = this.getNewWord();
+    this.currentWord = this.getNewWord(this.currentList);
   }
   onCheck(word: string): void {
     this.isRightAnswer = this.currentWord.nativeWord.toLowerCase().trim() === word.toLowerCase().trim();
+  }
+  onCancel(): void {
+    this.isPlay = false;
+    this.isRightAnswer = null;
+    this.currentList = '';
+  }
+  ngOnDestroy() {
+    this.listsSub.unsubscribe();
   }
 }

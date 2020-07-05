@@ -1,9 +1,10 @@
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {Observable, Subject, throwError} from 'rxjs';
 import { Word } from './word.model';
-import {exhaustMap, map, take} from 'rxjs/operators';
+import {catchError, exhaustMap, map, take, tap} from 'rxjs/operators';
 import {AuthService} from './auth/auth.service';
+import {User} from './auth/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +13,12 @@ export class WordService {
   // tslint:disable-next-line:max-line-length
   // private translateKey = 'Bearer CggVAgAAABoBMxKABJplLB2Se133ModDOCG9nPxyOoXimBFsOqdoBLfRYuBTITy-pgaaEZgm3xjJ8pX45NrXbrv64Mitm5EY4pOo9y14G9vmrgcdX8-jQJNadS5qL8jG7ohoZNhTlUTl6JbD70gUajHtiODZWbmn3oR60B63pHGo5_5pBxyDa6Oi8Kz9gyRkUpDgce3oqBK_aqCvoVfsISbli615X2xw_T7Nbsph4D4Ysp51fL406j5RMq6x1hWuJVu39i2mdPoBlaEF0PzL58R9iwlA-IO9zpzHEUKfCH26ESEfoB1pJaC2xd9gtKg2R4A3NosP9KZX2Ao11FQ6-dB0ZTVUMDpBz9KNuX0kIAV4DO10P31zLUw46hOoH1in32M_aZsDMNCBfCch4y7-m6wjXf4t1QA5cG-vOeUw0Ur6wSJ5lbbqr3hVTMLc6hkeUcRnumcOgMFO5VKwUTZStGdBjbgBky4Vam5Worz7Y5ysegXLdXEx94VWMOOe6yO8WjKI7QiJMVVziaVw05zlvhiR-CVV468b1Fcud95_csxEo-o7cbG6Po2YiGfQYuSKmlppZecpHeZ7w_4WQlq-8TgzSbj4SrsRf0owNv9kfsav1RDcEu79sZCcbVTWEwpRd1Z2PwFVbBFasZfpvuyYwV8V_ZAkpIauJQq0qmSkI0S3hb__nJttuNQmg8MKGiQQuKrx9wUY-Pvz9wUiFgoUYWpldXJrOWM4M2cyY3JnMGc0dHE=';
   words: Word[] = [];
-  wordsSub = new Subject<Word[]>();
-  isSending = new Subject<boolean>();
+  lists: any[] = [];
+  listsSubject = new Subject<any[]>();
   isTranslating = new Subject<boolean>();
-  error = new Subject<Error>();
   translatedWord = new Subject<string>();
+  private firebaseURL = 'https://wordskeeper-298da.firebaseio.com/';
+  private currentUser = JSON.parse(localStorage.getItem('userData'));
   constructor(private http: HttpClient, private authService: AuthService) {}
   fetchWords(): Observable<Word[]> {
     return this.authService.user.pipe(
@@ -24,7 +26,7 @@ export class WordService {
       exhaustMap(user => {
         return this.http
           .get<{[key: string]: Word}>(
-            'https://wordskeeper-298da.firebaseio.com/words.json'
+            `${this.firebaseURL}users/${this.currentUser.id}/words.json`
           ).pipe(
             map(responseData => {
               const wordsArray = [];
@@ -39,22 +41,39 @@ export class WordService {
       }),
       );
   }
-  addWords(newWord): void {
-    this.isSending.next(true);
-    this.http.post('https://wordskeeper-298da.firebaseio.com/words.json', newWord)
-      .subscribe((responseData: {name: string}) => {
-        if (responseData) {
-          this.isSending.next(false);
-          this.words.push({...newWord, id: responseData.name});
-          this.wordsSub.next(this.words);
-        }
-      }, (error) => this.error.next(error));
+  addWords(newWord): Observable<object> {
+    return this.http.post(
+      `${this.firebaseURL}users/${this.currentUser.id}/words.json`, newWord);
   }
-  deleteWord(id: string): void {
-    this.http.delete('https://wordskeeper-298da.firebaseio.com/words/' + id + '.json')
-      .subscribe();
-    this.words = this.words.filter((word) => word.id !== id);
-    this.wordsSub.next(this.words);
+  deleteWord(id: string): Observable<object> {
+    return this.http.delete(
+      `${this.firebaseURL}users/${this.currentUser.id}/words/${id}.json`);
+  }
+  fetchWordsLists(): Observable<any[]> {
+    return this.http.get(`${this.firebaseURL}users/${this.currentUser.id}/lists.json`)
+      .pipe(
+        catchError(err => throwError(err)),
+        map(this.dataHandler),
+        tap(listsArrayRes => {
+          if (listsArrayRes) {
+            this.lists = listsArrayRes;
+            this.listsSubject.next(this.lists);
+          }
+        })
+      );
+  }
+  addWordsList(listName: string): Observable<object> {
+    return this.http.post(
+      `${this.firebaseURL}users/${this.currentUser.id}/lists.json`, {name: listName})
+      .pipe(
+        catchError(err => throwError(err)),
+        tap((addListRes: {name: string}) => {
+          if (addListRes) {
+            this.lists.push({name: listName, id: addListRes.name});
+            this.listsSubject.next(this.lists);
+          }
+        })
+      );
   }
   // translateWord(word: string): void {
   //   this.isTranslating.next(true);
@@ -75,4 +94,15 @@ export class WordService {
   //       this.translatedWord.next(responseData.translations[0].text);
   //     });
   // }
+  private dataHandler(responseData): any[] {
+    const array = [];
+    if (responseData) {
+      for (const key of Object.keys(responseData)) {
+        array.push({...responseData[key], id: key});
+      }
+      return array;
+    } else {
+      return;
+    }
+  }
 }

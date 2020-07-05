@@ -1,15 +1,12 @@
 <h1 class="text-primary">
   {{ isLoginMode ? 'Login' : 'Sign Up' }}
 </h1>
+<app-error-handler [isError]="isError" errorMessage="error" (errorStatusChange)="errorStatusChange($event)">
+</app-error-handler>
 <div class="row">
   <div class="col-12">
     <div class="text-center" *ngIf="isLoading">
       <app-spinner></app-spinner>
-    </div>
-    <div class="text-center" *ngIf="error">
-      <div class="alert alert-danger" role="alert">
-        {{ error }}
-      </div>
     </div>
     <form [formGroup]="authForm" *ngIf="!isLoading">
       <div class="form-group">
@@ -24,7 +21,9 @@
         <button
           type="submit"
           class="btn btn-primary mr-2"
-          (click)="onSubmitForm(authForm.get('email').value, authForm.get('password').value)"
+          (click)="onSubmitForm(
+            authForm.get('email').value,
+            authForm.get('password').value)"
           [disabled]="authForm.invalid"
         >
           {{ isLoginMode ? 'Login' : 'Sign Up' }}
