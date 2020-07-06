@@ -22,6 +22,7 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
   listsSub: Subscription;
   lists = [];
   currentList = '';
+  playModeWithForeignWord = null;
   constructor(private wordService: WordService) {}
   ngOnInit() {
     this.wordsLoading = true;
@@ -68,7 +69,10 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
     const elementPosition = this.getRandom(wordArray.length);
     return wordArray[elementPosition];
   }
-  onPlay(listId?: string): void {
+  onPlay(playModeWithForeignWord?: boolean, listId?: string): void {
+    if (!this.playModeWithForeignWord && playModeWithForeignWord) {
+      this.playModeWithForeignWord = playModeWithForeignWord;
+    }
     if (listId) {
       this.currentList = listId;
     }
@@ -78,12 +82,20 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
     this.currentWord = this.getNewWord(this.currentList);
   }
   onCheck(word: string): void {
-    this.isRightAnswer = this.currentWord.nativeWord.toLowerCase().trim() === word.toLowerCase().trim();
+    if (this.playModeWithForeignWord) {
+      this.isRightAnswer = this.currentWord.nativeWord.toLowerCase().trim() === word.toLowerCase().trim();
+    } else {
+      this.isRightAnswer = this.currentWord.foreignWord.toLowerCase().trim() === word.toLowerCase().trim();
+    }
   }
   onCancel(): void {
     this.isPlay = false;
     this.isRightAnswer = null;
     this.currentList = '';
+    this.playModeWithForeignWord = null;
+  }
+  onCloseAnswerPopup(): void {
+    this.isRightAnswer = false;
   }
   ngOnDestroy() {
     this.listsSub.unsubscribe();
