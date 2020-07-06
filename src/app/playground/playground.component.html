@@ -5,15 +5,26 @@
       <div class="text-center" *ngIf="wordsLoading">
         <app-spinner>Loading words...</app-spinner>
       </div>
-      <div class="btn-toolbar" role="toolbar" *ngIf="!wordsLoading">
-        <div class="btn-group-vertical" role="group" aria-label="Choose a play mode">
+      <div class="btn-toolbar justify-content-center" role="toolbar" *ngIf="!wordsLoading">
+        <div class="btn-group-vertical mb-3" role="group" aria-label="Choose a play mode with native words">
+          <p>Play with native words</p>
           <button
             type="button"
             class="btn btn-secondary"
             *ngFor="let list of lists"
-            (click)="onPlay(list.id)"
-          >{{ 'Plat with ' + list.name }}</button>
-          <button type="button" class="btn btn-primary" (click)="onPlay()">Play with all words</button>
+            (click)="onPlay(false, list.id)"
+          >{{ 'Play with ' + list.name }}</button>
+          <button type="button" class="btn btn-primary" (click)="onPlay(false)">Play with all words</button>
+        </div>
+        <div class="btn-group-vertical" role="group" aria-label="Choose a play mode with foreign words">
+          <p>Play with foreign words</p>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            *ngFor="let list of lists"
+            (click)="onPlay(true, list.id)"
+          >{{ 'Play with ' + list.name }}</button>
+          <button type="button" class="btn btn-primary" (click)="onPlay(true)">Play with all words</button>
         </div>
       </div>
     </div>
@@ -28,29 +39,56 @@
   <div class="col-12">
     <div class="d-flex justify-content-center mt-2 mb-2">
       <div *ngIf="currentWord && isPlay">
-        <div *ngIf="isRightAnswer !== null" class="alert" [ngClass]="isRightAnswer ? 'alert-success' : 'alert-danger'" role="alert">
-          {{ isRightAnswer ? 'You are right. ' : 'One more attempt' }}
+        <div *ngIf="isRightAnswer !== null" class="alert fixed-top" [ngClass]="isRightAnswer ? 'alert-success' : 'alert-danger'" role="alert">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>{{ isRightAnswer ? 'You are right. ' : 'One more attempt' }}</span>
+            <button type="button" class="btn btn-primary" aria-label="Next question" (click)="onPlay()">
+              <span aria-hidden="true">Next</span>
+            </button>
+          </div>
         </div>
         <form [formGroup]="checkWordForm" class="form">
-          <div class="form-group">
-            <label for="foreignWord">Foreign word</label>
-            <input class="form-control" type="text" [value]="currentWord.foreignWord" id="foreignWord" disabled>
+          <div class="form-group" *ngIf="playModeWithForeignWord">
+            <h6>Foreign word</h6>
+            <div class="alert alert-primary" role="alert">
+              {{ currentWord.foreignWord }}
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!playModeWithForeignWord">
+            <h6>Native word</h6>
+            <div class="alert alert-primary" role="alert">
+              {{ currentWord.nativeWord }}
+            </div>
           </div>
           <div class="form-group">
-            <label for="nativeWord">Native word</label>
-            <div class="d-flex justify-content-between">
-              <input
-                class="form-control"
-                type="text"
-                placeholder="Your answer"
-                id="nativeWord"
-                formControlName="answer"
-              >
-              <button
-                class="btn btn-success"
-                (click)="onCheck(checkWordForm.get('answer').value)"
-              >Check</button>
+            <div *ngIf="playModeWithForeignWord">
+              <label for="nativeWord">Native word</label>
+              <div class="d-flex justify-content-between">
+                <input
+                  class="form-control"
+                  type="text"
+                  placeholder="Your answer"
+                  id="nativeWord"
+                  formControlName="answer"
+                >
+              </div>
             </div>
+            <div *ngIf="!playModeWithForeignWord">
+              <label for="foreignWord">Foreign word</label>
+              <div class="d-flex justify-content-between">
+                <input
+                  class="form-control"
+                  type="text"
+                  placeholder="Your answer"
+                  id="foreignWord"
+                  formControlName="answer"
+                >
+              </div>
+            </div>
+            <button
+              class="btn btn-success w-100 mt-3"
+              (click)="onCheck(checkWordForm.get('answer').value)"
+            >Check</button>
           </div>
         </form>
         <div class="card-body" *ngIf="isRightAnswer !== null">
